@@ -10,7 +10,7 @@ def tanh(x):
 #Generative model class
 class GM:
 
-    def __init__(self, dt, eta=0.1, eta_d=0.1, eta_a=1, eta_nu=1, nu=[1, 1], Sigma_mu=[0.01, 0.01], Sigma_s_p=[0.01, 0.01], Sigma_s_t=[0.07, 0.07]):
+    def __init__(self, dt, eta=0.1, eta_d=0.1, eta_a=1., eta_nu=1., nu=[1., 1.], Sigma_mu=[0.01, 0.01], Sigma_s_p=[0.01, 0.01], Sigma_s_t=[0.07, 0.07]):
 
         # Parameter that regulates whiskers amplitude oscillation
         self.nu = np.array(nu)
@@ -25,7 +25,7 @@ class GM:
         # Internal variables precisions
         self.Sigma_mu = np.array(Sigma_mu)
         # Action variable (in this case the action is intended as the increment of the variable that the agent is allowed to modified)
-        self.da = 0
+        self.da = 0.
         # Size of a simulation step
         self.dt = dt
         # Gradient descent weights
