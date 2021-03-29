@@ -1,5 +1,3 @@
-#%% md
-# ## Functions
 #%%
 # Modules
 import numpy as np
