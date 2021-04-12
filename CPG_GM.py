@@ -49,25 +49,25 @@ class GM:
         # touch_sensory_states  and proprioceptive_sensory_states arguments come from GP (both arrays have dimension equal to the number of whiskers)
         # Returns action increment
 
-        x = np.array(x)
+        #x = np.array(x)    # ?needed?
         self.s_p = proprioceptive_sensory_states
         self.s_t = touch_sensory_states
         eta, eta_d, eta_a, eta_nu = (self.eta[0], self.eta[1], self.eta[2], self.eta[3])
 
         self.PE_mu = self.dmu - (self.nu*x - self.mu)
+        self.PE_s_p = self.s_p-self.dmu
+        self.PE_s_t = self.s_t-self.g_touch(x=self.mu, v=self.dmu)
 
-        self.PE_s = np.array([
-            self.s_p-self.dmu,
-            self.s_t-self.g_touch(x=self.mu, v=self.dmu),
-        ])
+        self.dF_dmu = self.PE_mu/self.Sigma_mu \
+                    - self.dg_dx(x=self.mu, v=self.dmu)*self.PE_s_t/self.Sigma_s_t
 
-        self.dF_dmu = self.PE_mu/self.Sigma_mu - self.dg_dx(x=self.mu, v=self.dmu)*self.PE_s[1]/self.Sigma_s_t
-
-        self.dF_d_dmu = self.PE_mu/self.Sigma_mu - self.PE_s[0]/self.Sigma_s_p - self.dg_dv(x=self.mu, v=self.dmu)*self.PE_s[1]/self.Sigma_s_t
+        self.dF_d_dmu = self.PE_mu/self.Sigma_mu \
+                        - self.PE_s_p/self.Sigma_s_p \
+                        - self.dg_dv(x=self.mu, v=self.dmu)*self.PE_s_t/self.Sigma_s_t
 
         # Action update
         # case with dg/da = 1
-        self.da = -self.dt*eta_a*( x*self.PE_s[0]/self.Sigma_s_p + self.PE_s[1]/self.Sigma_s_t )
+        self.da = -self.dt*eta_a*( x*self.PE_s_p/self.Sigma_s_p + self.PE_s_t/self.Sigma_s_t )
         # case with real dg/da
         #self.da = -self.dt*eta_a*x*self.dg_dv(x=self.mu, v=self.dmu)*self.PE_s[1]/self.Sigma_s[1]
 

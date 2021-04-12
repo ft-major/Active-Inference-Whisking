@@ -16,31 +16,30 @@ class GP:
         # Parameter that regulates whiskers amplitude oscillation
         self.a = np.array(alpha)
         # Whiskers base angles
-        self.x = np.array([0., 0.])
+        self.x = np.zeros(len(self.a))
         # Array storing proprioceptive sensory inputs (whiskers angular velocity)
-        self.s_p = np.array([0. ,0.])
+        self.s_p = np.zeros(len(self.a))
         # Array storing touch sensory inputs
-        self.s_t = np.array([0., 0.])
+        self.s_t = np.zeros(len(self.a))
         # Variance of the Gaussian noise that gives proprioceptive sensory inputs
-        self.Sigma_s_p = np.array([0.1, 0.1])
+        self.Sigma_s_p = np.ones(len(self.a))*0.1
         # Variance of the Gaussian noise that gives touch sensort inputs
-        self.Sigma_s_t = np.array([0.1, 0.1])
+        self.Sigma_s_t = np.ones(len(self.a))*0.1
         # Size of a simulation step
         self.dt = dt
         # Time variable
         self.t = 0.
         # Object position (when is present) with respect to Whiskers angles
-        self.object_position = [0.5, 5.]
+        self.object_position = np.array([0.5, 5.])
         # Time interval in which the object appears
-        self.platform_interval = [15, 90]
+        self.object_interval = [15, 90]
 
     # Function that regulates object position
-    def obj_pos(self, t):
-        obj_interval = [15, 90]
+    def obj_pos(self, t, obj_interval):
         if t > obj_interval[0] and t < obj_interval[1]:
             return np.array([0.5, 2.])
         else:
-            return np.array([10, 10])
+            return np.array([10., 10.])
 
 
     # Function that return if a whisker has touched
@@ -67,15 +66,17 @@ class GP:
         self.cpg[1] += self.dt*(-self.omega2*self.cpg[0])
         self.x += self.dt*(self.a*self.cpg[0] - self.x)
 
+
         # object Action on touch sensory inputs
         for i in range(len(self.x)):
-            self.s_t[i] = self.touch(self.x[i], self.obj_pos(self.t)[i]) #+ self.Sigma_s_t[i]*rng.randn()
-            self.x[i] = min(self.x[i], self.obj_pos(self.t)[i])
+            self.object_position = self.obj_pos(self.t, self.object_interval)
+            self.s_t[i] = self.touch(self.x[i], self.object_position[i]) #+ self.Sigma_s_t[i]*rng.randn()
             if self.s_t[i] == 1:
+                self.x[i] = min(self.x[i], self.object_position[i])
                 self.s_p[i] = 0
             else:
                 self.s_p[i] = self.a[i]*self.cpg[0] - self.x[i]
             self.s_p[i] += self.Sigma_s_p[i]*rng.randn()
 
         # Proprioceptive sensor inputs
-        self.s_p = self.x + self.Sigma_s_p*rng.randn()
+        #self.s_p = self.x + self.Sigma_s_p*rng.randn()
