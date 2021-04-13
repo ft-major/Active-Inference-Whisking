@@ -6,12 +6,12 @@ from CPG_GP import GP
 # %%
 
 if __name__ == "__main__":
-    dt = 0.005
-    n_steps = 25000
-    gp = GP(dt=dt)
-    gm = GM(dt=dt, eta=0.001, eta_d=1., eta_nu=0.01, eta_a=0.06)#, x=gp.x[0], eta=0.001, eta_d=1., eta_a=0.06, eta_nu=0.01, omega2_GM=0.5, nu=1)
+    dt = 1/60
+    n_steps = 10*6*4
+    gp = GP(dt=dt, omega2_GP=(6*2*np.pi)**2, alpha=[20.,20.])
+    gm = GM(dt=dt, eta=0.01, eta_d=0.1, eta_nu=0.01, eta_a=0.01, nu=gp.a)#, x=gp.x[0], eta=0.001, eta_d=1., eta_a=0.06, eta_nu=0.01, omega2_GM=0.5, nu=1)
 
-    #cpg = []
+    cpg = []
 
     gp_x = []
     gp_a = []
@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
         a = gm.update(touch_sensory_states=gp.s_t, proprioceptive_sensory_states=gp.s_p, x=gp.cpg[0])
         gp.update(a)
-        #cpg.append( gp.cpg[0] )
+        cpg.append( gp.cpg[0] )
 
         gp_x.append( [gp.x[0], gp.x[1]] )
         gp_a.append( [gp.a[0], gp.a[1]] )
@@ -54,10 +54,10 @@ if __name__ == "__main__":
     plt.figure(figsize=(20, 10))
     plt.subplot(211)
     plt.plot(np.arange(0, n_steps*dt, dt), gp_x[:,0], label=r"$x_0$")
-    #plt.plot(np.arange(0, n_steps*dt, dt), cpg, label=r"cpg")
+    plt.plot(np.arange(0, n_steps*dt, dt), cpg, label=r"cpg")
     #plt.plot(np.arange(0, n_steps*dt, dt), sensory_state[:,0], label=r"$s_p$")
     #plt.plot(np.arange(0, n_steps*dt, dt), sensory_state[:,1], label=r"$s_t$")
-    plt.plot(np.arange(0, n_steps*dt, dt), gp_a[:,0], label=r"$\alpha_0$")
+    plt.plot(np.arange(0, n_steps*dt, dt), gp_a[:,0]/20, label=r"$\alpha_0/20$")
     plt.plot(np.arange(0, n_steps*dt, dt), gm_mu[:,0], label=r"$\mu_0$")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     #plt.subplot(212)
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     plt.show()
 
     #%%
+    """
     plt.figure(figsize=(20, 10))
     plt.subplot(211)
     plt.plot(np.arange(0, n_steps*dt, dt), gp_x[:,0], label=r"$x_0$")
@@ -80,3 +81,4 @@ if __name__ == "__main__":
     plt.plot(np.arange(0, n_steps*dt, dt), gp_a[:,1], label=r"$\alpha_1$")
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
     plt.show()
+    """

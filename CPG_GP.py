@@ -12,7 +12,7 @@ class GP:
         # Harmonic oscillator angular frequency (both x_0 and x_2)
         self.omega2 = omega2_GP
         # Variable representing the central pattern generator
-        self.cpg = np.array([0., 1.])
+        self.cpg = np.array([0., np.sqrt(self.omega2)])
         # Parameter that regulates whiskers amplitude oscillation
         self.a = np.array(alpha)
         # Whiskers base angles
@@ -22,9 +22,9 @@ class GP:
         # Array storing touch sensory inputs
         self.s_t = np.zeros(len(self.a))
         # Variance of the Gaussian noise that gives proprioceptive sensory inputs
-        self.Sigma_s_p = np.ones(len(self.a))*0.1
+        self.Sigma_s_p = np.ones(len(self.a))*0.01
         # Variance of the Gaussian noise that gives touch sensort inputs
-        self.Sigma_s_t = np.ones(len(self.a))*0.1
+        self.Sigma_s_t = np.ones(len(self.a))*0.01
         # Size of a simulation step
         self.dt = dt
         # Time variable
@@ -37,7 +37,7 @@ class GP:
     # Function that regulates object position
     def obj_pos(self, t, obj_interval):
         if t > obj_interval[0] and t < obj_interval[1]:
-            return np.array([0.5, 2.])
+            return np.array([10., 10.])
         else:
             return np.array([10., 10.])
 
