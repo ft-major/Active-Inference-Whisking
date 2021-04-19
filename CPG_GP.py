@@ -32,12 +32,12 @@ class GP:
         # Object position (when is present) with respect to Whiskers angles
         self.object_position = np.array([0.5, 5.])
         # Time interval in which the object appears
-        self.object_interval = [15, 90]
+        self.object_interval = [3, 6]
 
     # Function that regulates object position
     def obj_pos(self, t, obj_interval):
         if t > obj_interval[0] and t < obj_interval[1]:
-            return np.array([10., 10.])
+            return np.array([0.5, 5.])
         else:
             return np.array([10., 10.])
 
@@ -62,9 +62,10 @@ class GP:
         # Increment of alpha variable (that changes the amplitude) given by agent's action
         self.a += action
         # GP dynamics implementation
-        self.cpg[0] += self.dt*(self.cpg[1])
-        self.cpg[1] += self.dt*(-self.omega2*self.cpg[0])
-        self.x += self.dt*(self.a*self.cpg[0] - self.x)
+        self.cpg[0] = np.sin(np.sqrt(self.omega2)*self.t)
+        #self.cpg[0] += self.dt*(self.cpg[1])
+        #self.cpg[1] += self.dt*(-self.omega2*self.cpg[0])
+        self.x += self.dt*(self.a*(6*2*np.pi)*self.cpg[0] - self.x)
 
 
         # object Action on touch sensory inputs
