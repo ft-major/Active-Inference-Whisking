@@ -12,27 +12,27 @@ class GP:
         # Harmonic oscillator angular frequency (both x_0 and x_2)
         self.omega2 = omega2_GP
         # Variable representing the central pattern generator
-        self.cpg = np.array([0., np.sqrt(self.omega2)])
+        self.cpg = np.array([0., 1.])
         # Parameter that regulates whiskers amplitude oscillation
         self.a = np.array(alpha)
         # Whiskers base angles
         self.x = np.zeros(len(self.a))
         # Array storing proprioceptive sensory inputs (whiskers angular velocity)
-        self.s_p = np.zeros(len(self.a))
+        self.s_p = np.ones(len(self.a))*(self.a*self.cpg[0]-self.x)
         # Array storing touch sensory inputs
         self.s_t = np.zeros(len(self.a))
         # Variance of the Gaussian noise that gives proprioceptive sensory inputs
-        self.Sigma_s_p = np.ones(len(self.a))*0.01
+        self.Sigma_s_p = np.ones(len(self.a))*0.1
         # Variance of the Gaussian noise that gives touch sensort inputs
-        self.Sigma_s_t = np.ones(len(self.a))*0.01
+        self.Sigma_s_t = np.ones(len(self.a))*0.1
         # Size of a simulation step
         self.dt = dt
         # Time variable
         self.t = 0.
         # Object position (when is present) with respect to Whiskers angles
-        self.object_position = np.array([0.5, 5.])
+        # self.object_position = np.array([0.5, 5.])
         # Time interval in which the object appears
-        self.object_interval = [3, 6]
+        self.object_interval = [15, 90]
 
     # Function that regulates object position
     def obj_pos(self, t, obj_interval):
@@ -62,10 +62,10 @@ class GP:
         # Increment of alpha variable (that changes the amplitude) given by agent's action
         self.a += action
         # GP dynamics implementation
-        self.cpg[0] = np.sin(np.sqrt(self.omega2)*self.t)
-        #self.cpg[0] += self.dt*(self.cpg[1])
-        #self.cpg[1] += self.dt*(-self.omega2*self.cpg[0])
-        self.x += self.dt*(self.a*(6*2*np.pi)*self.cpg[0] - self.x)
+        #self.cpg[0] = np.sin(np.sqrt(self.omega2)*self.t)
+        self.cpg[0] += self.dt*(self.cpg[1])
+        self.cpg[1] += self.dt*(-self.omega2*self.cpg[0])
+        self.x += self.dt*(self.a*self.cpg[0] - self.x)
 
 
         # object Action on touch sensory inputs
